@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option csharp_namespace = "Delirium";
+
+package greet;
+
+service Greeter {
+  rpc CreateTags (CreateTagsRequest) returns (CreateTagsResponse);
+  rpc GetTags (GetTagsRequest) returns (GetTagsResponse);
+}
+
+message CreateTagsRequest {
+  repeated string name = 1;
+}
+
+message GetTagsRequest {
+    Filter filter = 1;
+}
+
+message CreateTagsResponse {
+}
+
+message GetTagsResponse {
+    repeated Tag tags = 1;
+}
+
+message Filter {
+    repeated string names = 1;
+}
+
+message Tag {
+    string id = 1;
+    string name = 2;
+}
