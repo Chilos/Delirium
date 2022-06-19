@@ -10,6 +10,7 @@ namespace Delirium.Persistence.EntityTypeConfiguration
         {
             builder.HasKey(measurement => measurement.Id);
             builder.HasIndex(measurement => measurement.Id).IsUnique();
+            builder.Property(measurement => measurement.Id).ValueGeneratedOnAdd();
         }
     }
 }

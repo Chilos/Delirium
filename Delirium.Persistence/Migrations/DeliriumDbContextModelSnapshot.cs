@@ -60,9 +60,6 @@ namespace Delirium.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<Guid?>("ExerciseTemplateId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -72,8 +69,6 @@ namespace Delirium.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExerciseTemplateId");
 
                     b.HasIndex("Id")
                         .IsUnique();
@@ -87,16 +82,11 @@ namespace Delirium.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ExerciseTemplateId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExerciseTemplateId");
 
                     b.HasIndex("Id")
                         .IsUnique();
@@ -124,25 +114,64 @@ namespace Delirium.Persistence.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Delirium.Domain.Measurement", b =>
+            modelBuilder.Entity("ExerciseTemplateMeasurement", b =>
                 {
-                    b.HasOne("Delirium.Domain.ExerciseTemplate", null)
-                        .WithMany("Parameters")
-                        .HasForeignKey("ExerciseTemplateId");
+                    b.Property<Guid>("ExerciseTemplatesId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("ParametersId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ExerciseTemplatesId", "ParametersId");
+
+                    b.HasIndex("ParametersId");
+
+                    b.ToTable("ExerciseTemplateMeasurement");
                 });
 
-            modelBuilder.Entity("Delirium.Domain.Tag", b =>
+            modelBuilder.Entity("ExerciseTemplateTag", b =>
                 {
-                    b.HasOne("Delirium.Domain.ExerciseTemplate", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("ExerciseTemplateId");
+                    b.Property<Guid>("ExerciseTemplatesId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TagsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ExerciseTemplatesId", "TagsId");
+
+                    b.HasIndex("TagsId");
+
+                    b.ToTable("ExerciseTemplateTag");
                 });
 
-            modelBuilder.Entity("Delirium.Domain.ExerciseTemplate", b =>
+            modelBuilder.Entity("ExerciseTemplateMeasurement", b =>
                 {
-                    b.Navigation("Parameters");
+                    b.HasOne("Delirium.Domain.ExerciseTemplate", null)
+                        .WithMany()
+                        .HasForeignKey("ExerciseTemplatesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Tags");
+                    b.HasOne("Delirium.Domain.Measurement", null)
+                        .WithMany()
+                        .HasForeignKey("ParametersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ExerciseTemplateTag", b =>
+                {
+                    b.HasOne("Delirium.Domain.ExerciseTemplate", null)
+                        .WithMany()
+                        .HasForeignKey("ExerciseTemplatesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Delirium.Domain.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
