@@ -26,11 +26,12 @@ public class GetExerciseTemplateRequestHandler : IRequestHandler<GetExerciseTemp
 
         if (request.TagIds.Count != 0)  
         {
-            return await _deliriumDbContext.ExerciseTemplates
-                .Where(e => request.TagIds.Intersect(e.Tags.Select(t => t.Id)).Count() == request.TagIds.Count)
+            return _deliriumDbContext.ExerciseTemplates
                 .Include(e => e.Parameters)
                 .Include(e => e.Tags)
-                .ToListAsync(cancellationToken);
+                .AsEnumerable()
+                .Where(e => request.TagIds.All(id => e.Tags.Exists(t => t.Id == id)))
+                .ToList();
         }
 
         return await _deliriumDbContext.ExerciseTemplates
