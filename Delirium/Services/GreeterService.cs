@@ -1,5 +1,5 @@
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Delirium;
 using MediatR;
 
 namespace Delirium.Services;
@@ -71,6 +71,144 @@ public class GreeterService : Greeter.GreeterBase
                 Tags = { e.Tags.Select(t => new Tag{Id = t.Id.ToString(), Name = t.Name}) },
                 Measurement = { e.Parameters.Select(m => new Measurement{Id = m.Id, Name = m.Name, Unit = m.Unit}) }
             }) }
+        };
+    }
+
+    public override async Task<CreateWorkoutResponse> CreateWorkout(CreateWorkoutRequest request, ServerCallContext context)
+    {
+        var innerRequest =
+            new Application.Features.Workout.Commands.CreateWorkout.CreateWorkoutRequest(request.UserId,
+                DateOnly.FromDateTime(request.Date.ToDateTime()));
+        await _mediator.Send(innerRequest, context.CancellationToken);
+
+        return new CreateWorkoutResponse();
+    }
+
+    public override async Task<AddExerciseToWorkoutResponse> AddExerciseToWorkout(AddExerciseToWorkoutRequest request, ServerCallContext context)
+    {
+        var innerRequest =
+            new Application.Features.Workout.Commands.AddExercise
+                .AddExerciseRequest(Guid.Parse(request.WorkoutId), Guid.Parse(request.ExerciseId));
+        await _mediator.Send(innerRequest, context.CancellationToken);
+
+        return new AddExerciseToWorkoutResponse();
+    }
+
+    public override async Task<ChangeExerciseFromWorkoutResponse> ChangeExerciseFromWorkout(
+        ChangeExerciseFromWorkoutRequest request,
+        ServerCallContext context)
+    {
+        var innerRequest =
+            new Application.Features.Workout.Commands.ChangeExercise
+                .ChangeExerciseRequest(Guid.Parse(request.WorkoutId),
+                    Guid.Parse(request.FromId), Guid.Parse(request.ToId));
+        await _mediator.Send(innerRequest, context.CancellationToken);
+
+        return new ChangeExerciseFromWorkoutResponse();
+    }
+
+    public override async Task<RemoveExerciseFromWorkoutResponse> RemoveExerciseFromWorkout(
+        RemoveExerciseFromWorkoutRequest request,
+        ServerCallContext context)
+    {
+        var innerRequest =
+            new Application.Features.Workout.Commands.RemoveExercise
+                .RemoveExerciseRequest(Guid.Parse(request.WorkoutId), Guid.Parse(request.ExerciseId));
+        await _mediator.Send(innerRequest, context.CancellationToken);
+
+        return new RemoveExerciseFromWorkoutResponse();
+    }
+
+    public override async Task<GetWorkoutsByDateResponse> GetWorkoutsByDate(GetWorkoutsByDateRequest request, ServerCallContext context)
+    {
+        var innerRequest = new Delirium.Application.Features.Workout.Queries.GetWorkoutsByDate
+            .GetWorkoutsByDateRequest(request.UserId, DateOnly.FromDateTime(request.Date.ToDateTime()));
+        var workouts = await _mediator.Send(innerRequest, context.CancellationToken);
+        return new GetWorkoutsByDateResponse
+        {
+            Workouts = { workouts.Select(w => new Workout
+            {
+                Date = Timestamp.FromDateTime(w.Date.ToDateTime(new TimeOnly(0,0), DateTimeKind.Utc)),
+                Id = w.Id.ToString(),
+                State = (int)w.State,
+                UserId = w.UserId,
+                Exercises = { w.Exercises.Select(e => new ExerciseTemplate
+                {
+                    Id = e.Id.ToString(),
+                    Title = e.Title,
+                    Description = e.Description,
+                    DefaultSetsCount = e.DefaultSetsCount,
+                    ImageUrls = { e.ImageUrls },
+                    Tags = { e.Tags.Select(t => new Tag{Id = t.Id.ToString(), Name = t.Name}) },
+                    Measurement = { e.Parameters.Select(m => new Measurement{Id = m.Id, Name = m.Name, Unit = m.Unit}) }
+                }) },
+                Sets = { w.Sets.Select(s => new Set
+                {
+                    Exercise = new ExerciseTemplate
+                    {
+                        Id = s.Exercise.Id.ToString(),
+                        Title = s.Exercise.Title,
+                        Description = s.Exercise.Description,
+                        DefaultSetsCount = s.Exercise.DefaultSetsCount,
+                        ImageUrls = { s.Exercise.ImageUrls },
+                        Tags = { s.Exercise.Tags.Select(t => new Tag{Id = t.Id.ToString(), Name = t.Name}) },
+                        Measurement = { s.Exercise.Parameters.Select(m => new Measurement{Id = m.Id, Name = m.Name, Unit = m.Unit}) }
+                    },
+                    Values = { s.Values.Select(v => new MeasurementValue
+                    {
+                        Id = v.Id.ToString(),
+                        Measurement = new Measurement{Id = v.Measurement.Id, Name = v.Measurement.Name, Unit = v.Measurement.Unit},
+                        Value = v.Value
+                    }) }
+                }) }
+            }) }
+        };
+    }
+
+    public override async Task<GetWorkoutByIdResponse> GetWorkoutById(GetWorkoutByIdRequest request, ServerCallContext context)
+    {
+        var innerRequest = new Delirium.Application.Features.Workout.Queries.GetWorkoutById
+            .GetWorkoutByIdRequest(Guid.Parse(request.Id));
+        var workout = await _mediator.Send(innerRequest, context.CancellationToken);
+
+        return new GetWorkoutByIdResponse
+        {
+            Workout = new Workout
+            {
+                Date = Timestamp.FromDateTime(workout.Date.ToDateTime(new TimeOnly(0,0), DateTimeKind.Utc)),
+                Id = workout.Id.ToString(),
+                State = (int)workout.State,
+                UserId = workout.UserId,
+                Exercises = { workout.Exercises.Select(e => new ExerciseTemplate
+                {
+                    Id = e.Id.ToString(),
+                    Title = e.Title,
+                    Description = e.Description,
+                    DefaultSetsCount = e.DefaultSetsCount,
+                    ImageUrls = { e.ImageUrls },
+                    Tags = { e.Tags.Select(t => new Tag{Id = t.Id.ToString(), Name = t.Name}) },
+                    Measurement = { e.Parameters.Select(m => new Measurement{Id = m.Id, Name = m.Name, Unit = m.Unit}) }
+                }) },
+                Sets = { workout.Sets.Select(s => new Set
+                {
+                    Exercise = new ExerciseTemplate
+                    {
+                        Id = s.Exercise.Id.ToString(),
+                        Title = s.Exercise.Title,
+                        Description = s.Exercise.Description,
+                        DefaultSetsCount = s.Exercise.DefaultSetsCount,
+                        ImageUrls = { s.Exercise.ImageUrls },
+                        Tags = { s.Exercise.Tags.Select(t => new Tag{Id = t.Id.ToString(), Name = t.Name}) },
+                        Measurement = { s.Exercise.Parameters.Select(m => new Measurement{Id = m.Id, Name = m.Name, Unit = m.Unit}) }
+                    },
+                    Values = { s.Values.Select(v => new MeasurementValue
+                    {
+                        Id = v.Id.ToString(),
+                        Measurement = new Measurement{Id = v.Measurement.Id, Name = v.Measurement.Name, Unit = v.Measurement.Unit},
+                        Value = v.Value
+                    }) }
+                }) }
+            }
         };
     }
 }

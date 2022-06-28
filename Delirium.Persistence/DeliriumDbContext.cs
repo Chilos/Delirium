@@ -10,6 +10,9 @@ namespace Delirium.Persistence
         public DbSet<ExerciseTemplate> ExerciseTemplates { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Measurement> Measurements { get; set; }
+        public DbSet<MeasurementValue> MeasurementValues { get; set; }
+        public DbSet<Workout> Workouts { get; set; }
+        public DbSet<Set> Sets { get; set; }
 
         public DeliriumDbContext()
         {
@@ -32,6 +35,9 @@ namespace Delirium.Persistence
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new MeasurementConfiguration());
             modelBuilder.ApplyConfiguration(new TagConfiguration());
+            modelBuilder.ApplyConfiguration(new WorkoutConfiguration());
+            modelBuilder.ApplyConfiguration(new MeasurementValueConfiguration());
+            modelBuilder.ApplyConfiguration(new SetConfiguration());
             base.OnModelCreating(modelBuilder);
         }
     }
