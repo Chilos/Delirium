@@ -17,7 +17,23 @@ service Greeter {
   rpc RemoveExerciseFromWorkout (RemoveExerciseFromWorkoutRequest) returns (RemoveExerciseFromWorkoutResponse);
   rpc GetWorkoutsByDate (GetWorkoutsByDateRequest) returns (GetWorkoutsByDateResponse);
   rpc GetWorkoutById (GetWorkoutByIdRequest) returns (GetWorkoutByIdResponse);
+  rpc AddSetToWorkout (AddSetToWorkoutRequest) returns (AddSetToWorkoutResponse);
 }
+
+message SetValue {
+  int64 MeasurementId = 1;
+  double Value = 2;
+}
+
+message AddSetToWorkoutRequest {
+  string workoutId = 1;
+  string exerciseId = 2;
+  repeated SetValue values = 3;
+}
+
+message AddSetToWorkoutResponse {
+}
+
 message GetWorkoutsByDateRequest {
   google.protobuf.Timestamp date = 1;
   int64 userId = 2;

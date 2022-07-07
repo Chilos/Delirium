@@ -1,3 +1,4 @@
+using Delirium.Application.Features.Workout.Commands.AddSet;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using MediatR;
@@ -144,6 +145,8 @@ public class GreeterService : Greeter.GreeterBase
                 }) },
                 Sets = { w.Sets.Select(s => new Set
                 {
+                    
+                    Id = s.Id.ToString(),
                     Exercise = new ExerciseTemplate
                     {
                         Id = s.Exercise.Id.ToString(),
@@ -191,6 +194,7 @@ public class GreeterService : Greeter.GreeterBase
                 }) },
                 Sets = { workout.Sets.Select(s => new Set
                 {
+                    Id = s.Id.ToString(),
                     Exercise = new ExerciseTemplate
                     {
                         Id = s.Exercise.Id.ToString(),
@@ -210,5 +214,15 @@ public class GreeterService : Greeter.GreeterBase
                 }) }
             }
         };
+    }
+
+    public override async Task<AddSetToWorkoutResponse> AddSetToWorkout(AddSetToWorkoutRequest request, ServerCallContext context)
+    {
+        var innerRequest = new AddSetRequest(Guid.Parse(request.WorkoutId),
+            Guid.Parse(request.ExerciseId),
+            request.Values.Select(v => (v.MeasurementId, v.Value)).ToList());
+        await _mediator.Send(innerRequest, context.CancellationToken);
+
+        return new AddSetToWorkoutResponse();
     }
 }
