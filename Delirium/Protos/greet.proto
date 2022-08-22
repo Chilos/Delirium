@@ -21,13 +21,13 @@ service Greeter {
 }
 
 message SetValue {
-  int64 MeasurementId = 1;
-  double Value = 2;
+  int64 measurement_id = 1;
+  double value = 2;
 }
 
 message AddSetToWorkoutRequest {
-  string workoutId = 1;
-  string exerciseId = 2;
+  string workout_id = 1;
+  string exercise_id = 2;
   repeated SetValue values = 3;
 }
 
@@ -36,7 +36,7 @@ message AddSetToWorkoutResponse {
 
 message GetWorkoutsByDateRequest {
   google.protobuf.Timestamp date = 1;
-  int64 userId = 2;
+  int64 user_id = 2;
 }
 
 message GetWorkoutsByDateResponse {
@@ -53,32 +53,32 @@ message GetWorkoutByIdResponse {
 
 message CreateWorkoutRequest {
   google.protobuf.Timestamp date = 1;
-  int64 userId = 2;
+  int64 user_id = 2;
 }
 
 message CreateWorkoutResponse {
 }
 
 message AddExerciseToWorkoutRequest {
-  string workoutId = 1;
-  string exerciseId = 2;
+  string workout_id = 1;
+  string exercise_id = 2;
 }
 
 message AddExerciseToWorkoutResponse {
 }
 
 message ChangeExerciseFromWorkoutRequest {
-  string workoutId = 1;
-  string fromId = 2;
-  string toId = 3;
+  string workout_id = 1;
+  string from_id = 2;
+  string to_id = 3;
 }
 
 message ChangeExerciseFromWorkoutResponse {
 }
 
 message RemoveExerciseFromWorkoutRequest {
-  string workoutId = 1;
-  string exerciseId = 2;
+  string workout_id = 1;
+  string exercise_id = 2;
 }
 
 message RemoveExerciseFromWorkoutResponse {
@@ -119,10 +119,10 @@ message CreateMeasurementResponse {
 message CreateExerciseTemplateRequest {
     string title = 1;
     string description = 2;
-    int32 defaultSetsCount = 3;
-    repeated string tagIds = 4;
-    repeated string imageUrls = 5;
-    repeated int64 measurementIds = 6;
+    int32 default_sets_count = 3;
+    repeated string tag_ids = 4;
+    repeated string image_urls = 5;
+    repeated int64 measurement_ids = 6;
 }
 
 message CreateExerciseTemplateResponse {
@@ -130,19 +130,19 @@ message CreateExerciseTemplateResponse {
 
 message GetExerciseTemplatesRequest {
     repeated string ids = 1;
-    repeated string tagIds = 2;
+    repeated string tag_ids = 2;
 }
 
 message GetExerciseTemplatesResponse {
-    repeated ExerciseTemplate exerciseTemplates = 1;
+    repeated ExerciseTemplate exercise_templates = 1;
 }
 
 message ExerciseTemplate {
     string id = 1;
     string title = 2;
     string description = 3;
-    int32 defaultSetsCount = 4;
-    repeated string imageUrls = 5;
+    int32 default_sets_count = 4;
+    repeated string image_urls = 5;
     repeated Tag tags = 6;
     repeated Measurement measurement = 7;
 }
@@ -155,11 +155,11 @@ message Measurement {
 
 message Workout {
     string id = 1;
-    int64 userId = 2;
+    int64 user_id = 2;
     google.protobuf.Timestamp date = 3;
     repeated ExerciseTemplate exercises = 4;
     repeated Set sets = 5;
-    int32 State = 6;
+    int32 state = 6;
 }
 
 message Set {
